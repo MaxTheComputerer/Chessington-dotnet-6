@@ -29,6 +29,11 @@ namespace Chessington.GameEngine
         {
             return _board[square.Row, square.Col];
         }
+
+        public bool IsOccupied(Square square)
+        {
+            return GetPiece(square) != null;
+        }
         
         public Square FindPiece(Piece piece)
         {

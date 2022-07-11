@@ -17,12 +17,13 @@ namespace Chessington.GameEngine.Pieces
             var direction = (Player == Player.White) ? -1 : 1;
             availableMoves.Add(Square.At(currentSquare.Row + direction, currentSquare.Col));
 
-            // Can move two spaces up/down if it hasn't moved yet
-            if (NumberOfMoves == 0)
+            // Can move two spaces up/down if it hasn't moved yet, and if path is clear
+            if (NumberOfMoves == 0 && !board.IsOccupied(availableMoves[0]))
             {
                 availableMoves.Add(Square.At(currentSquare.Row + (2 * direction), currentSquare.Col));
             }
             
+            availableMoves.RemoveAll(board.IsOccupied);
             return availableMoves;
         }
     }
