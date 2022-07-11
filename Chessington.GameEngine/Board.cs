@@ -50,6 +50,29 @@ namespace Chessington.GameEngine
             throw new ArgumentException("The supplied piece is not on the board.", "piece");
         }
 
+        private void TryEnPassant(Square from, Square to)
+        {
+            var movingPiece = _board[from.Row, from.Col];
+            var victim = _board[from.Row, to.Col];
+            if (victim != null 
+                && movingPiece is Pawn 
+                && victim is Pawn { IsVulnerableToEnPassant: true })
+            {
+                OnPieceCaptured(_board[from.Row, to.Col]);
+                _board[from.Row, to.Col] = null;
+            }
+        }
+
+        private void TryPawnPromotion(Square from, Square to)
+        {
+            var movingPiece = _board[from.Row, from.Col];
+            if (movingPiece is Pawn && (CurrentPlayer == Player.White && to.Row == 0) ||
+                (CurrentPlayer == Player.Black && to.Row == 7))
+            {
+                _board[to.Row, to.Col] = new Queen(CurrentPlayer, movingPiece.NumberOfMoves);
+            }
+        }
+
         public void MovePiece(Square from, Square to)
         {
             var movingPiece = _board[from.Row, from.Col];
@@ -69,16 +92,9 @@ namespace Chessington.GameEngine
             //Move the piece
             _board[to.Row, to.Col] = _board[from.Row, from.Col];
             
-            // En passant
-            if (_board[from.Row, to.Col] != null)
-            {
-                var victim = _board[from.Row, to.Col];
-                if (movingPiece is Pawn && victim is Pawn { IsVulnerableToEnPassant: true })
-                {
-                    OnPieceCaptured(_board[from.Row, to.Col]);
-                    _board[from.Row, to.Col] = null;
-                }
-            }
+            // Extras
+            TryEnPassant(from, to);
+            TryPawnPromotion(from, to);
             
             // Set the 'from' square to be empty.
             _board[from.Row, from.Col] = null;

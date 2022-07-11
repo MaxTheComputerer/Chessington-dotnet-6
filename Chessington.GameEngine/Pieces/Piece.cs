@@ -5,14 +5,14 @@ namespace Chessington.GameEngine.Pieces
 {
     public abstract class Piece
     {
-        protected Piece(Player player)
+        protected Piece(Player player, int numberOfMoves = 0)
         {
             Player = player;
-            NumberOfMoves = 0;
+            NumberOfMoves = numberOfMoves;
         }
 
         public Player Player { get; private set; }
-        protected int NumberOfMoves { get; private set; }
+        public int NumberOfMoves { get; private set; }
 
         protected bool CanCaptureAtSquare(Board board, Square square)
         {

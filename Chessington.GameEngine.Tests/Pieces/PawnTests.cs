@@ -305,5 +305,31 @@ namespace Chessington.GameEngine.Tests.Pieces
             board.GetPiece(Square.At(5, 5)).Should().Be(pawn);
             board.GetPiece(Square.At(4, 5)).Should().BeNull();
         }
+
+        [Test]
+        public void WhitePawns_ArePromotedIntoQueens_WhenMovedToTheEdge()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(1, 4), pawn);
+            
+            pawn.MoveTo(board, Square.At(0, 4));
+
+            board.GetPiece(Square.At(0, 4)).Should().BeOfType(typeof(Queen));
+            board.GetPiece(Square.At(0, 4)).Player.Should().Be(Player.White);
+        }
+        
+        [Test]
+        public void BlackPawns_ArePromotedIntoQueens_WhenMovedToTheEdge()
+        {
+            var board = new Board(Player.Black);
+            var pawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(6, 4), pawn);
+            
+            pawn.MoveTo(board, Square.At(7, 4));
+
+            board.GetPiece(Square.At(7, 4)).Should().BeOfType(typeof(Queen));
+            board.GetPiece(Square.At(7, 4)).Player.Should().Be(Player.Black);
+        }
     }
 }
