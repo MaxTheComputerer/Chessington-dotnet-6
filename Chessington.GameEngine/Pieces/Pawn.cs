@@ -24,6 +24,21 @@ namespace Chessington.GameEngine.Pieces
             }
             
             availableMoves.RemoveAll(board.IsObstructed);
+
+            // Allow pawns to capture on diagonals
+            var leftDiagonal = Square.At(currentSquare.Row + direction, currentSquare.Col - 1);
+            var rightDiagonal = Square.At(currentSquare.Row + direction, currentSquare.Col + 1);
+
+            if (board.IsObstructed(leftDiagonal) && CanCaptureAtSquare(board, leftDiagonal))
+            {
+                availableMoves.Add(leftDiagonal);
+            }
+            if (board.IsObstructed(rightDiagonal) && CanCaptureAtSquare(board, rightDiagonal))
+            {
+                availableMoves.Add(rightDiagonal);
+            }
+            
+            availableMoves.RemoveAll(square => board.IsObstructed(square) && !CanCaptureAtSquare(board, square));
             return availableMoves;
         }
     }
