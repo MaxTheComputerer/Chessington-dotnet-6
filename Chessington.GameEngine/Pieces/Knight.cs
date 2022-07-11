@@ -11,19 +11,17 @@ namespace Chessington.GameEngine.Pieces
         public override IEnumerable<Square> GetAvailableMoves(Board board)
         {
             var currentSquare = board.FindPiece(this);
-            var availableMoves = new List<Square>();
-            
-            availableMoves.Add(Square.At(currentSquare.Row + 2, currentSquare.Col + 1));
-            availableMoves.Add(Square.At(currentSquare.Row + 2, currentSquare.Col - 1));
-            
-            availableMoves.Add(Square.At(currentSquare.Row - 2, currentSquare.Col + 1));
-            availableMoves.Add(Square.At(currentSquare.Row - 2, currentSquare.Col - 1));
-            
-            availableMoves.Add(Square.At(currentSquare.Row + 1, currentSquare.Col + 2));
-            availableMoves.Add(Square.At(currentSquare.Row - 1, currentSquare.Col + 2));
-            
-            availableMoves.Add(Square.At(currentSquare.Row + 1, currentSquare.Col - 2));
-            availableMoves.Add(Square.At(currentSquare.Row - 1, currentSquare.Col - 2));
+            var availableMoves = new List<Square>
+            {
+                Square.At(currentSquare.Row + 2, currentSquare.Col + 1),
+                Square.At(currentSquare.Row + 2, currentSquare.Col - 1),
+                Square.At(currentSquare.Row - 2, currentSquare.Col + 1),
+                Square.At(currentSquare.Row - 2, currentSquare.Col - 1),
+                Square.At(currentSquare.Row + 1, currentSquare.Col + 2),
+                Square.At(currentSquare.Row - 1, currentSquare.Col + 2),
+                Square.At(currentSquare.Row + 1, currentSquare.Col - 2),
+                Square.At(currentSquare.Row - 1, currentSquare.Col - 2)
+            };
 
             return availableMoves;
         }
