@@ -15,7 +15,7 @@ namespace Chessington.GameEngine.Pieces
         public Player Player { get; private set; }
         protected int NumberOfMoves { get; private set; }
 
-        private bool CanCaptureAtSquare(Board board, Square square)
+        protected bool CanCaptureAtSquare(Board board, Square square)
         {
             if (Board.IsOutOfBounds(square))
             {
