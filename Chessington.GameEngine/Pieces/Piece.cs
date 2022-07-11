@@ -7,16 +7,19 @@ namespace Chessington.GameEngine.Pieces
         protected Piece(Player player)
         {
             Player = player;
+            NumberOfMoves = 0;
         }
 
         public Player Player { get; private set; }
-
+        public int NumberOfMoves { get; set; }
+        
         public abstract IEnumerable<Square> GetAvailableMoves(Board board);
 
         public void MoveTo(Board board, Square newSquare)
         {
             var currentSquare = board.FindPiece(this);
             board.MovePiece(currentSquare, newSquare);
+            NumberOfMoves++;
         }
     }
 }

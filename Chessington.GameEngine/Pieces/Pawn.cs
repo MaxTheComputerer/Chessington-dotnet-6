@@ -13,14 +13,16 @@ namespace Chessington.GameEngine.Pieces
             var currentSquare = board.FindPiece(this);
             var availableMoves = new List<Square>();
 
-            if (Player == Player.White)
+            // Can always move one square up/down depending on player colour
+            var direction = (Player == Player.White) ? -1 : 1;
+            availableMoves.Add(Square.At(currentSquare.Row + direction, currentSquare.Col));
+
+            // Can move two spaces up/down if it hasn't moved yet
+            if (NumberOfMoves == 0)
             {
-                availableMoves.Add(Square.At(currentSquare.Row - 1, currentSquare.Col));
+                availableMoves.Add(Square.At(currentSquare.Row + (2 * direction), currentSquare.Col));
             }
-            else
-            {
-                availableMoves.Add(Square.At(currentSquare.Row + 1, currentSquare.Col));
-            }
+            
             return availableMoves;
         }
     }
