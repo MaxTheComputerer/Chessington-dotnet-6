@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Chessington.GameEngine.Pieces
 {
@@ -13,6 +14,12 @@ namespace Chessington.GameEngine.Pieces
 
         public Player Player { get; private set; }
         public int NumberOfMoves { get; private set; }
+
+        public bool CanAttack(Board board, Square victimPosition)
+        {
+            var moves = GetAvailableMoves(board);
+            return moves.Contains(victimPosition);
+        }
 
         protected bool CanCaptureAtSquare(Board board, Square square)
         {

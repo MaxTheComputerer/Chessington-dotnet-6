@@ -20,6 +20,11 @@ namespace Chessington.GameEngine
             CapturedPieces = new List<Piece>();
         }
 
+        public Player GetEnemyOf(Player player)
+        {
+            return (player == Player.White) ? Player.Black : Player.White;
+        }
+
         public void AddPiece(Square square, Piece pawn)
         {
             _board[square.Row, square.Col] = pawn;
@@ -28,6 +33,22 @@ namespace Chessington.GameEngine
         public Piece GetPiece(Square square)
         {
             return _board[square.Row, square.Col];
+        }
+        
+        public List<Piece> GetAllPieces(Player player)
+        {
+            var pieces = GetAllPieces();
+            return pieces.FindAll(p => p.Player == player);
+        }
+
+        public List<Piece> GetAllPieces()
+        {
+            var pieces = new List<Piece>();
+            for (var row = 0; row < GameSettings.BoardSize; row++)
+                for (var col = 0; col < GameSettings.BoardSize; col++)
+                    if (_board[row, col] != null)
+                        pieces.Add(_board[row, col]);
+            return pieces;
         }
 
         public static bool IsOutOfBounds(Square square)
@@ -99,7 +120,7 @@ namespace Chessington.GameEngine
             // Set the 'from' square to be empty.
             _board[from.Row, from.Col] = null;
 
-            CurrentPlayer = movingPiece.Player == Player.White ? Player.Black : Player.White;
+            CurrentPlayer = GetEnemyOf(movingPiece.Player);
             OnCurrentPlayerChanged(CurrentPlayer);
         }
         

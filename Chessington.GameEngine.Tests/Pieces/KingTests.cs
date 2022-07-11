@@ -76,5 +76,50 @@ namespace Chessington.GameEngine.Tests.Pieces
             var moves = king.GetAvailableMoves(board);
             moves.Should().NotContain(Square.At(4, 5));
         }
+
+        [Test]
+        public void Kings_CanDetectWhenInCheck()
+        {
+            var board = new Board();
+            var king = new King(Player.Black);
+            board.AddPiece(Square.At(2, 2), king);
+            
+            var rook = new Rook(Player.White);
+            board.AddPiece(Square.At(6, 2), rook);
+
+            king.IsInCheckAtPosition(board, board.FindPiece(king)).Should().BeTrue();
+        }
+        
+        [Test]
+        public void Kings_CannotMoveIntoCheck()
+        {
+            var board = new Board();
+            var king = new King(Player.Black);
+            board.AddPiece(Square.At(2, 3), king);
+            
+            var rook = new Rook(Player.White);
+            board.AddPiece(Square.At(6, 2), rook);
+
+            var moves = king.GetAvailableMoves(board);
+
+            moves.Should().NotContain(Square.At(2, 2))
+                .And.NotContain(Square.At(1, 2))
+                .And.NotContain(Square.At(3, 2));
+        }
+
+        [Test]
+        public void Kings_AreForcedToGetOutOfCheck_WhenInCheck()
+        {
+            var board = new Board();
+            var king = new King(Player.Black);
+            board.AddPiece(Square.At(2, 2), king);
+            
+            var rook = new Rook(Player.White);
+            board.AddPiece(Square.At(6, 2), rook);
+
+            var moves = king.GetAvailableMoves(board);
+
+            moves.Should().NotContain(Square.At(3, 2)).And.NotContain(Square.At(5, 2));
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Chessington.GameEngine.Pieces
 {
@@ -6,6 +7,13 @@ namespace Chessington.GameEngine.Pieces
     {
         public King(Player player)
             : base(player) { }
+
+        public bool IsInCheckAtPosition(Board board, Square position)
+        {
+            var enemyPieces = board.GetAllPieces(board.GetEnemyOf(Player));
+            enemyPieces.RemoveAll(p => p is King);
+            return enemyPieces.Any(piece => piece.CanAttack(board, position));
+        }
 
         public override IEnumerable<Square> GetAvailableMoves(Board board)
         {
@@ -23,6 +31,7 @@ namespace Chessington.GameEngine.Pieces
             };
 
             availableMoves.RemoveAll(square => board.IsObstructed(square) && !CanCaptureAtSquare(board, square));
+            availableMoves.RemoveAll(square => IsInCheckAtPosition(board, square));
             return availableMoves;
         }
     }
