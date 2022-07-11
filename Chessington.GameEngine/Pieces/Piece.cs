@@ -14,63 +14,23 @@ namespace Chessington.GameEngine.Pieces
 
         public Player Player { get; private set; }
         protected int NumberOfMoves { get; private set; }
+
+        private bool CanCaptureAtSquare(Board board, Square square)
+        {
+            if (Board.IsOutOfBounds(square))
+            {
+                return false;
+            }
+
+            var piece = board.GetPiece(square);
+            return Player != piece.Player;
+        }
         
         public abstract IEnumerable<Square> GetAvailableMoves(Board board);
 
-        protected static IEnumerable<Square> GetLateralMoves(Board board, Square currentSquare)
+        private IEnumerable<Square> GetLinearMovesInDirection(Board board, Square currentSquare, int rowDirection, int colDirection)
         {
-            var availableMoves = new List<Square>();
-
-            // Right
-            for (var col = currentSquare.Col + 1; col < 8; col++)
-            {
-                var candidateSquare = Square.At(currentSquare.Row, col);
-                if (board.IsObstructed(candidateSquare))
-                {
-                    break;
-                }
-                availableMoves.Add(candidateSquare);
-            }
-            
-            // Left
-            for (var col = currentSquare.Col - 1; col >= 0; col--)
-            {
-                var candidateSquare = Square.At(currentSquare.Row, col);
-                if (board.IsObstructed(candidateSquare))
-                {
-                    break;
-                }
-                availableMoves.Add(candidateSquare);
-            }
-            
-            // Down
-            for (var row = currentSquare.Row + 1; row < 8; row++)
-            {
-                var candidateSquare = Square.At(row, currentSquare.Col);
-                if (board.IsObstructed(candidateSquare))
-                {
-                    break;
-                }
-                availableMoves.Add(candidateSquare);
-            }
-            
-            // Up
-            for (var row = currentSquare.Row - 1; row >= 0; row--)
-            {
-                var candidateSquare = Square.At(row, currentSquare.Col);
-                if (board.IsObstructed(candidateSquare))
-                {
-                    break;
-                }
-                availableMoves.Add(candidateSquare);
-            }
-
-            return availableMoves;
-        }
-        
-        private static IEnumerable<Square> GetDiagonalMovesInOneDirection(Board board, Square currentSquare, int rowDirection, int colDirection)
-        {
-            // Moves in the specified diagonal direction, adding available moves until an obstruction is found
+            // Moves in the specified direction, adding available moves until an obstruction is found
             var availableMoves = new List<Square>();
             
             for (var i = 1; i < 8; i++)
@@ -78,6 +38,11 @@ namespace Chessington.GameEngine.Pieces
                 var candidateSquare = Square.At(currentSquare.Row + (rowDirection * i), currentSquare.Col + (colDirection * i));
                 if (board.IsObstructed(candidateSquare))
                 {
+                    // Still add this move if we can take the piece
+                    if (CanCaptureAtSquare(board, candidateSquare))
+                    {
+                        availableMoves.Add(candidateSquare);
+                    }
                     break;
                 }
                 availableMoves.Add(candidateSquare);
@@ -85,22 +50,41 @@ namespace Chessington.GameEngine.Pieces
 
             return availableMoves;
         }
+        
+        protected IEnumerable<Square> GetLateralMoves(Board board, Square currentSquare)
+        {
+            var availableMoves = new List<Square>();
 
-        protected static IEnumerable<Square> GetDiagonalMoves(Board board, Square currentSquare)
+            // Right
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, 0, 1));
+            
+            // Left
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, 0, -1));
+            
+            // Down
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, 1, 0));
+            
+            // Up
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, -1, 0));
+
+            return availableMoves;
+        }
+
+        protected IEnumerable<Square> GetDiagonalMoves(Board board, Square currentSquare)
         {
             var availableMoves = new List<Square>();
             
             // Down and right
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, 1));
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, 1, 1));
 
             // Up and left
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, -1));
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, -1, -1));
 
             // Down and right
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, -1));
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, 1, -1));
 
             // Down and left
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, 1));
+            availableMoves.AddRange(GetLinearMovesInDirection(board, currentSquare, -1, 1));
 
             return availableMoves;
         }
