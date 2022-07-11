@@ -66,6 +66,16 @@ namespace Chessington.GameEngine
                 OnPieceCaptured(_board[to.Row, to.Col]);
             }
 
+            // En passant
+            if (_board[from.Row, to.Col] != null)
+            {
+                var victim = _board[from.Row, to.Col];
+                if (movingPiece is Pawn && victim is Pawn { IsVulnerableToEnPassant: true })
+                {
+                    OnPieceCaptured(_board[from.Row, to.Col]);
+                }
+            }
+
             //Move the piece and set the 'from' square to be empty.
             _board[to.Row, to.Col] = _board[from.Row, from.Col];
             _board[from.Row, from.Col] = null;

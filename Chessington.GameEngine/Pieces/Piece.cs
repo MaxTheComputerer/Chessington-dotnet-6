@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Chessington.GameEngine.Pieces
 {
@@ -89,7 +88,7 @@ namespace Chessington.GameEngine.Pieces
             return availableMoves;
         }
 
-        public void MoveTo(Board board, Square newSquare)
+        public virtual void MoveTo(Board board, Square newSquare)
         {
             var currentSquare = board.FindPiece(this);
             board.MovePiece(currentSquare, newSquare);

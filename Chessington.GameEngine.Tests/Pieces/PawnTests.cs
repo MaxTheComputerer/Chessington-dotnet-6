@@ -201,5 +201,73 @@ namespace Chessington.GameEngine.Tests.Pieces
             moves.Should().NotContain(Square.At(6, 2));
             moves.Should().NotContain(Square.At(6, 4));
         }
+
+        [Test]
+        public void WhitePawns_CanMoveDiagonallyRight_IfEnPassantConditionIsMet()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(4, 4), pawn);
+
+            var enemyPawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(1, 5), enemyPawn);
+            
+            pawn.MoveTo(board, Square.At(3, 4));
+            enemyPawn.MoveTo(board, Square.At(3, 5));
+
+            var moves = pawn.GetAvailableMoves(board).ToList();
+
+            moves.Should().Contain(Square.At(2, 5));
+        }
+        
+        [Test]
+        public void WhitePawns_CanMoveDiagonallyLeft_IfEnPassantConditionIsMet()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(4, 4), pawn);
+
+            var enemyPawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(1, 3), enemyPawn);
+            
+            pawn.MoveTo(board, Square.At(3, 4));
+            enemyPawn.MoveTo(board, Square.At(3, 3));
+
+            var moves = pawn.GetAvailableMoves(board).ToList();
+
+            moves.Should().Contain(Square.At(2, 3));
+        }
+        
+        [Test]
+        public void BlackPawns_CanMoveDiagonallyRight_IfEnPassantConditionIsMet()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(4, 4), pawn);
+
+            var enemyPawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(6, 5), enemyPawn);
+            enemyPawn.MoveTo(board, Square.At(4, 5));
+
+            var moves = pawn.GetAvailableMoves(board).ToList();
+
+            moves.Should().Contain(Square.At(5, 5));
+        }
+        
+        [Test]
+        public void BlackPawns_CanMoveDiagonallyLeft_IfEnPassantConditionIsMet()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(4, 4), pawn);
+
+            var enemyPawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(6, 3), enemyPawn);
+            enemyPawn.MoveTo(board, Square.At(4, 3));
+
+            var moves = pawn.GetAvailableMoves(board).ToList();
+
+            moves.Should().Contain(Square.At(5, 3));
+        }
     }
 }

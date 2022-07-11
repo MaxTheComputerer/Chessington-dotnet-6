@@ -1,12 +1,33 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Chessington.GameEngine.Pieces
 {
     public class Pawn : Piece
     {
+        public bool IsVulnerableToEnPassant { get; set; }
+        
         public Pawn(Player player) 
             : base(player) { }
+
+        private bool CanPerformEnPassant(Board board, Square currentSquare, int direction)
+        {
+            if (Player == Player.White && currentSquare.Row == 3 || Player == Player.Black && currentSquare.Row == 4)
+            {
+                var candidateSquare = Square.At(currentSquare.Row, currentSquare.Col + direction);
+
+                if (board.IsObstructed(candidateSquare) && CanCaptureAtSquare(board, candidateSquare))
+                {
+                    var victim = board.GetPiece(candidateSquare);
+                    if (victim is Pawn { IsVulnerableToEnPassant: true })
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         public override IEnumerable<Square> GetAvailableMoves(Board board)
         {
@@ -22,7 +43,7 @@ namespace Chessington.GameEngine.Pieces
             {
                 availableMoves.Add(Square.At(currentSquare.Row + (2 * direction), currentSquare.Col));
             }
-            
+
             availableMoves.RemoveAll(board.IsObstructed);
 
             // Allow pawns to capture on diagonals
@@ -33,13 +54,30 @@ namespace Chessington.GameEngine.Pieces
             {
                 availableMoves.Add(leftDiagonal);
             }
+
             if (board.IsObstructed(rightDiagonal) && CanCaptureAtSquare(board, rightDiagonal))
             {
                 availableMoves.Add(rightDiagonal);
             }
+
+            // En passant rule
+            if (CanPerformEnPassant(board, currentSquare, 1))
+            {
+                availableMoves.Add(rightDiagonal);
+            }
+            if (CanPerformEnPassant(board, currentSquare, -1))
+            {
+                availableMoves.Add(leftDiagonal);
+            }
             
-            availableMoves.RemoveAll(square => board.IsObstructed(square) && !CanCaptureAtSquare(board, square));
             return availableMoves;
+        }
+
+        public override void MoveTo(Board board, Square newSquare)
+        {
+            var currentSquare = board.FindPiece(this);
+            IsVulnerableToEnPassant = Math.Abs(newSquare.Row - currentSquare.Row) == 2;
+            base.MoveTo(board, newSquare);
         }
     }
 }
