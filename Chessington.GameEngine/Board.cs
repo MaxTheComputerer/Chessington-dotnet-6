@@ -65,7 +65,10 @@ namespace Chessington.GameEngine
             {
                 OnPieceCaptured(_board[to.Row, to.Col]);
             }
-
+            
+            //Move the piece
+            _board[to.Row, to.Col] = _board[from.Row, from.Col];
+            
             // En passant
             if (_board[from.Row, to.Col] != null)
             {
@@ -73,11 +76,11 @@ namespace Chessington.GameEngine
                 if (movingPiece is Pawn && victim is Pawn { IsVulnerableToEnPassant: true })
                 {
                     OnPieceCaptured(_board[from.Row, to.Col]);
+                    _board[from.Row, to.Col] = null;
                 }
             }
-
-            //Move the piece and set the 'from' square to be empty.
-            _board[to.Row, to.Col] = _board[from.Row, from.Col];
+            
+            // Set the 'from' square to be empty.
             _board[from.Row, from.Col] = null;
 
             CurrentPlayer = movingPiece.Player == Player.White ? Player.Black : Player.White;

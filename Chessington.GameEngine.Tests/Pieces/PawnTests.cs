@@ -269,5 +269,41 @@ namespace Chessington.GameEngine.Tests.Pieces
 
             moves.Should().Contain(Square.At(5, 3));
         }
+
+        [Test]
+        public void WhitePawns_CanTake_UsingEnPassant()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(4, 4), pawn);
+
+            var enemyPawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(1, 5), enemyPawn);
+            
+            pawn.MoveTo(board, Square.At(3, 4));
+            enemyPawn.MoveTo(board, Square.At(3, 5));
+
+            pawn.MoveTo(board, Square.At(2, 5));
+
+            board.GetPiece(Square.At(2, 5)).Should().Be(pawn);
+            board.GetPiece(Square.At(3, 5)).Should().BeNull();
+        }
+        
+        [Test]
+        public void BlackPawns_CanTake_UsingEnPassant()
+        {
+            var board = new Board();
+            var pawn = new Pawn(Player.Black);
+            board.AddPiece(Square.At(4, 4), pawn);
+
+            var enemyPawn = new Pawn(Player.White);
+            board.AddPiece(Square.At(6, 5), enemyPawn);
+            enemyPawn.MoveTo(board, Square.At(4, 5));
+            
+            pawn.MoveTo(board, Square.At(5, 5));
+
+            board.GetPiece(Square.At(5, 5)).Should().Be(pawn);
+            board.GetPiece(Square.At(4, 5)).Should().BeNull();
+        }
     }
 }
