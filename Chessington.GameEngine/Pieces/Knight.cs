@@ -23,6 +23,7 @@ namespace Chessington.GameEngine.Pieces
                 Square.At(currentSquare.Row - 1, currentSquare.Col - 2)
             };
 
+            availableMoves.RemoveAll(board.IsObstructed);
             return availableMoves;
         }
     }

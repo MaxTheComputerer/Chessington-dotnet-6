@@ -30,9 +30,14 @@ namespace Chessington.GameEngine
             return _board[square.Row, square.Col];
         }
 
-        public bool IsOccupied(Square square)
+        public static bool IsOutOfBounds(Square square)
         {
-            return GetPiece(square) != null;
+            return square.Row is < 0 or >= 8 || square.Col is < 0 or >= 8;
+        }
+
+        public bool IsObstructed(Square square)
+        {
+            return IsOutOfBounds(square) || GetPiece(square) != null;
         }
         
         public Square FindPiece(Piece piece)

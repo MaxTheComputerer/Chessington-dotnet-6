@@ -25,7 +25,7 @@ namespace Chessington.GameEngine.Pieces
             for (var col = currentSquare.Col + 1; col < 8; col++)
             {
                 var candidateSquare = Square.At(currentSquare.Row, col);
-                if (board.IsOccupied(candidateSquare))
+                if (board.IsObstructed(candidateSquare))
                 {
                     break;
                 }
@@ -36,7 +36,7 @@ namespace Chessington.GameEngine.Pieces
             for (var col = currentSquare.Col - 1; col >= 0; col--)
             {
                 var candidateSquare = Square.At(currentSquare.Row, col);
-                if (board.IsOccupied(candidateSquare))
+                if (board.IsObstructed(candidateSquare))
                 {
                     break;
                 }
@@ -47,7 +47,7 @@ namespace Chessington.GameEngine.Pieces
             for (var row = currentSquare.Row + 1; row < 8; row++)
             {
                 var candidateSquare = Square.At(row, currentSquare.Col);
-                if (board.IsOccupied(candidateSquare))
+                if (board.IsObstructed(candidateSquare))
                 {
                     break;
                 }
@@ -58,7 +58,7 @@ namespace Chessington.GameEngine.Pieces
             for (var row = currentSquare.Row - 1; row >= 0; row--)
             {
                 var candidateSquare = Square.At(row, currentSquare.Col);
-                if (board.IsOccupied(candidateSquare))
+                if (board.IsObstructed(candidateSquare))
                 {
                     break;
                 }
@@ -68,18 +68,15 @@ namespace Chessington.GameEngine.Pieces
             return availableMoves;
         }
         
-        private static IEnumerable<Square> GetDiagonalMovesInOneDirection(Board board, Square currentSquare, int rowDirection, int colDirection,
-            Func<int, bool> rowBoundCondition, Func<int, bool> colBoundCondition)
+        private static IEnumerable<Square> GetDiagonalMovesInOneDirection(Board board, Square currentSquare, int rowDirection, int colDirection)
         {
             // Moves in the specified diagonal direction, adding available moves until an obstruction is found
-            // Bound condition functions specify the upper/lower bound of the board to check for, depending on direction
-            
             var availableMoves = new List<Square>();
             
             for (var i = 1; i < 8; i++)
             {
                 var candidateSquare = Square.At(currentSquare.Row + (rowDirection * i), currentSquare.Col + (colDirection * i));
-                if (rowBoundCondition(candidateSquare.Row) || colBoundCondition(candidateSquare.Col) || board.IsOccupied(candidateSquare))
+                if (board.IsObstructed(candidateSquare))
                 {
                     break;
                 }
@@ -92,21 +89,18 @@ namespace Chessington.GameEngine.Pieces
         protected static IEnumerable<Square> GetDiagonalMoves(Board board, Square currentSquare)
         {
             var availableMoves = new List<Square>();
-
-            bool UpperBoundCondition(int coord) => coord >= 8;
-            bool LowerBoundCondition(int coord) => coord < 0;
-
+            
             // Down and right
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, 1, UpperBoundCondition, UpperBoundCondition));
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, 1));
 
             // Up and left
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, -1, LowerBoundCondition, LowerBoundCondition));
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, -1));
 
             // Down and right
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, -1, UpperBoundCondition, LowerBoundCondition));
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, -1));
 
             // Down and left
-            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, 1, LowerBoundCondition, UpperBoundCondition));
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, 1));
 
             return availableMoves;
         }
