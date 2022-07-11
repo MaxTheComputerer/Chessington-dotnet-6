@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Chessington.GameEngine.Pieces
 {
@@ -65,37 +67,46 @@ namespace Chessington.GameEngine.Pieces
 
             return availableMoves;
         }
+        
+        private static IEnumerable<Square> GetDiagonalMovesInOneDirection(Board board, Square currentSquare, int rowDirection, int colDirection,
+            Func<int, bool> rowBoundCondition, Func<int, bool> colBoundCondition)
+        {
+            // Moves in the specified diagonal direction, adding available moves until an obstruction is found
+            // Bound condition functions specify the upper/lower bound of the board to check for, depending on direction
+            
+            var availableMoves = new List<Square>();
+            
+            for (var i = 1; i < 8; i++)
+            {
+                var candidateSquare = Square.At(currentSquare.Row + (rowDirection * i), currentSquare.Col + (colDirection * i));
+                if (rowBoundCondition(candidateSquare.Row) || colBoundCondition(candidateSquare.Col) || board.IsOccupied(candidateSquare))
+                {
+                    break;
+                }
+                availableMoves.Add(candidateSquare);
+            }
 
-        protected static IEnumerable<Square> GetDiagonalMoves(Square currentSquare)
+            return availableMoves;
+        }
+
+        protected static IEnumerable<Square> GetDiagonalMoves(Board board, Square currentSquare)
         {
             var availableMoves = new List<Square>();
 
-            for (var i = 1; i < 8; i++)
-            {
-                // Down and right
-                if (currentSquare.Row + i < 8 && currentSquare.Col + i < 8)
-                {
-                    availableMoves.Add(Square.At(currentSquare.Row + i, currentSquare.Col + i));
-                }
-                
-                // Up and left
-                if (currentSquare.Row - i >= 0 && currentSquare.Col - i >= 0)
-                {
-                    availableMoves.Add(Square.At(currentSquare.Row - i, currentSquare.Col - i));
-                }
+            bool UpperBoundCondition(int coord) => coord >= 8;
+            bool LowerBoundCondition(int coord) => coord < 0;
 
-                // Down and right
-                if (currentSquare.Row + i < 8 && currentSquare.Col - i >= 0)
-                {
-                    availableMoves.Add(Square.At(currentSquare.Row + i, currentSquare.Col - i));
-                }
-                
-                // Down and left
-                if (currentSquare.Row - i >= 0 && currentSquare.Col + i < 8)
-                {
-                    availableMoves.Add(Square.At(currentSquare.Row - i, currentSquare.Col + i));
-                }
-            }
+            // Down and right
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, 1, UpperBoundCondition, UpperBoundCondition));
+
+            // Up and left
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, -1, LowerBoundCondition, LowerBoundCondition));
+
+            // Down and right
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, 1, -1, UpperBoundCondition, LowerBoundCondition));
+
+            // Down and left
+            availableMoves.AddRange(GetDiagonalMovesInOneDirection(board, currentSquare, -1, 1, LowerBoundCondition, UpperBoundCondition));
 
             return availableMoves;
         }
