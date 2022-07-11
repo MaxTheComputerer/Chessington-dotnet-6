@@ -15,18 +15,53 @@ namespace Chessington.GameEngine.Pieces
         
         public abstract IEnumerable<Square> GetAvailableMoves(Board board);
 
-        protected static IEnumerable<Square> GetLateralMoves(Square currentSquare)
+        protected static IEnumerable<Square> GetLateralMoves(Board board, Square currentSquare)
         {
             var availableMoves = new List<Square>();
 
-            for (var i = 0; i < 8; i++)
+            // Right
+            for (var col = currentSquare.Col + 1; col < 8; col++)
             {
-                availableMoves.Add(Square.At(currentSquare.Row, i));
-                availableMoves.Add(Square.At(i, currentSquare.Col));
+                var candidateSquare = Square.At(currentSquare.Row, col);
+                if (board.IsOccupied(candidateSquare))
+                {
+                    break;
+                }
+                availableMoves.Add(candidateSquare);
             }
-
-            //Get rid of our starting location.
-            availableMoves.RemoveAll(s => s == Square.At(currentSquare.Row, currentSquare.Col));
+            
+            // Left
+            for (var col = currentSquare.Col - 1; col >= 0; col--)
+            {
+                var candidateSquare = Square.At(currentSquare.Row, col);
+                if (board.IsOccupied(candidateSquare))
+                {
+                    break;
+                }
+                availableMoves.Add(candidateSquare);
+            }
+            
+            // Down
+            for (var row = currentSquare.Row + 1; row < 8; row++)
+            {
+                var candidateSquare = Square.At(row, currentSquare.Col);
+                if (board.IsOccupied(candidateSquare))
+                {
+                    break;
+                }
+                availableMoves.Add(candidateSquare);
+            }
+            
+            // Up
+            for (var row = currentSquare.Row - 1; row >= 0; row--)
+            {
+                var candidateSquare = Square.At(row, currentSquare.Col);
+                if (board.IsOccupied(candidateSquare))
+                {
+                    break;
+                }
+                availableMoves.Add(candidateSquare);
+            }
 
             return availableMoves;
         }
